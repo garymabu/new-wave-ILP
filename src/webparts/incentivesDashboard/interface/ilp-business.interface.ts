@@ -1,4 +1,4 @@
 export enum DedicationType {
-  Exclusiva,
-  Compartilhada,
+  Exclusiva = "Exclusiva",
+  Compartilhada = "Compartilhada",
 }

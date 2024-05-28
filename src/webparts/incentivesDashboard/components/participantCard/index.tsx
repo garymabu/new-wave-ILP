@@ -1,19 +1,20 @@
 import * as React from 'react';
 import styles from './participant-card.module.scss';
+import { getDateDiffUntilTodayInLargestUnit } from '../../util/date.utils';
 
 export interface ParticipantCardProps {
   displayName: string;
   userPicUrl: string;
   currentPosition: string;
   currentCompany: string;
-  totalTimeOnboard: string;
+  startTimeInCompany: Date;
 }
 
 export default ({
   displayName,
   currentCompany,
   currentPosition,
-  totalTimeOnboard,
+  startTimeInCompany,
   userPicUrl
 }:ParticipantCardProps) => {
   return (
@@ -33,7 +34,7 @@ export default ({
         </div>
         <div className={styles.mediumValueWithLabel}>
           <div className={styles.label}>Contribuição Total</div>
-          <div className={styles.value}>{totalTimeOnboard}</div>
+          <div className={styles.value}>{getDateDiffUntilTodayInLargestUnit(startTimeInCompany)}</div>
         </div>
       </div>
     </div>

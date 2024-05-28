@@ -4,6 +4,7 @@ import { SPUser } from "@microsoft/sp-page-context";
 export interface IncentivesDashboardProps {
   spHttpClient: SPHttpClient;
   spUser: SPUser;
+  webSiteName: string;
 }
 
 export enum TabOptions {

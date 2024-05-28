@@ -7,6 +7,14 @@ import { UserService } from '../integration/services/user.service';
 import CalendarIcon from './icons/calendar.icon';
 import IncentiveAnalyticsCard, { IncentiveAnalyticsCardProps } from './incentive-analytics-card';
 import { DedicationType } from '../interface/ilp-business.interface';
+import { SharepointClient } from '../client/sharepoint.client';
+import {ParticipantService} from '../integration/services/participant.service';
+import { fromSharepointDateToDate } from '../util/date.utils';
+import { CompanyService } from '../integration/services/company.service';
+import { ParticipantWithCompany } from '../interface/dto.interface';
+
+// // eslint-disable-next-line @typescript-eslint/no-var-requires
+// const logoPath = require('../assets/WA_HOR-3D-POSITIVO.png');
 
 const {
   pageTitle,
@@ -17,28 +25,75 @@ export default ({
   // spHttpClient,
   spHttpClient,
   spUser,
+  webSiteName,
   }: IncentivesDashboardProps) => {
   const [selectedTab, setSelectedTab] = React.useState(TabOptions.Cards);
+  const [
+    participantEntries
+    , setParticipantEntries] = React.useState<ParticipantWithCompany[]>([]);
 
-  const userService = new UserService();
+  const userService = React.useMemo(()=>new UserService(),[]);
+  const sharepointClient = React.useMemo(() => new SharepointClient(spHttpClient, webSiteName), [spHttpClient, webSiteName]);
+
+  React.useEffect(
+    () : void => {
+      // (async () => {
+        const service = new ParticipantService(sharepointClient);
+        // eslint-disable-next-line @typescript-eslint/no-floating-promises
+        service.getAllParticipantDataRelatedBy(spUser.email).then(
+          async (data) => {
+            setParticipantEntries(
+              await Promise.all(data.map(
+                async (d) => ({
+                  ...d,
+                  company: (await new CompanyService(sharepointClient).getById(d.Empresa.Id))[0]
+                } as ParticipantWithCompany)
+              ))
+            );
+          }
+        )
+    },
+    [sharepointClient]
+  )
+
   const userPicUrl = userService.getUserPicUrl(spUser.email);
 
-  const participantCompanyData : IncentiveAnalyticsCardProps[] = [
-    {
-      companyLogoUrl: 'https://www.newwave.com.br/wp-content/uploads/2020/06/logo-new-wave-1.png',
-      position: 'Frontend Developer',
-      dedicationType: DedicationType.Exclusiva,
-      points: 100,
-      positionInCompany: 'Frontend Developer',
-      cap: 150
-    }
-  ];
+  const [lastUser] = (participantEntries ?? []).sort(
+    (a, b) => fromSharepointDateToDate(a.Entrada).getTime() - fromSharepointDateToDate(b.Entrada).getTime()
+  )
+
+  const participantCompanyData : Omit<IncentiveAnalyticsCardProps, 'exibitionIndex'>[] =
+  participantEntries.map(
+    (participantEntry) => ({
+      companyLogoUrl: participantEntry.company.Logo,
+      positionInCompany: participantEntry.Cargo,
+      dedicationType: participantEntry.Dedica_x00e7__x00e3_o as DedicationType,
+      points: parseInt(participantEntry.PNW),
+      cap: parseInt(participantEntry.Teto),
+      startInCompanyDate: fromSharepointDateToDate(participantEntry.Entrada),
+      totalCompanyPoints: parseInt(participantEntry.PNW),
+    })
+  )
+  // [
+  //   {
+  //     companyLogoUrl: logoPath,
+  //     positionInCompany: 'Frontend Developer',
+  //     dedicationType: DedicationType.Exclusiva,
+  //     points: 100,
+  //     cap: 150,
+  //     startInCompanyDate: new Date('2023-03-01'),
+  //     totalCompanyPoints: 500,
+  //   }
+  // ];
+
+  console.log('participantEntries', participantEntries)
+  console.log('lastUser', lastUser)
 
   const participantCardProps : ParticipantCardProps = {
-    currentCompany: 'New Wave',
-    currentPosition: 'Frontend Developer',
+    currentCompany: lastUser?.company?.Title ?? 'N/A',
+    currentPosition: lastUser?.Cargo,
     displayName: spUser.displayName,
-    totalTimeOnboard: '1 ano',
+    startTimeInCompany: lastUser ? fromSharepointDateToDate(lastUser?.Entrada) : new Date(),
     userPicUrl,
   };
 
@@ -49,12 +104,13 @@ export default ({
     return selectedTab === tabOption ? styles.iconSelected : styles.icon;
   }
 
+
   const Cards = () => {
     return (
-      <div>
+      <div className={styles.cardViewRow}>
         {
-          participantCompanyData.map((participantData) => (
-            <IncentiveAnalyticsCard key={participantData.companyLogoUrl} {...participantData} />
+          participantCompanyData.map((participantData, i) => (
+            <IncentiveAnalyticsCard key={participantData.companyLogoUrl} {...participantData} exibitionIndex={i} />
           ))
         }
       </div>
@@ -77,26 +133,8 @@ export default ({
       </div>
       <div>
         {selectedTab === TabOptions.Cards && <Cards/>}
-        {selectedTab === TabOptions.Organograma && <div>Organograma</div>}
+        {selectedTab === TabOptions.Organograma && <Cards/>}
       </div>
     </section>
   );
-}
-
-// export default class IncentivesDashboard
-//   extends React.Component<IIncentivesDashboardProps, {}> {
-//   public render(): React.ReactElement<IIncentivesDashboardProps> {
-
-//     return (
-//       <section>
-//         <div className={styles.pageTitle}>{pageTitle}</div>
-//         <div className={styles.cardSmall}>
-//           <div className={styles.userHeaderRow}>
-//             <div className={styles.userImage}/>
-//             <div></div>
-//           </div>
-//         </div>
-//       </section>
-//     );
-//   }
-// }
+};

@@ -1,19 +1,25 @@
 import * as React from "react";
 import * as ReactDom from "react-dom";
 import { Version } from "@microsoft/sp-core-library";
-import { type IPropertyPaneConfiguration } from "@microsoft/sp-property-pane";
+import {
+  PropertyPaneTextField,
+  type IPropertyPaneConfiguration,
+} from "@microsoft/sp-property-pane";
 import { BaseClientSideWebPart } from "@microsoft/sp-webpart-base";
 import { IReadonlyTheme } from "@microsoft/sp-component-base";
 
 import IncentivesDashboard from "./components/incentives-dashboard";
 import { IncentivesDashboardProps } from "./components/incentives-dashboard.interface";
 
-export default class IncentivesDashboardWebPart extends BaseClientSideWebPart<unknown> {
+export default class IncentivesDashboardWebPart extends BaseClientSideWebPart<{
+  webSiteName: string;
+}> {
   public render(): void {
     const element: React.ReactElement<IncentivesDashboardProps> =
       React.createElement(IncentivesDashboard, {
         spHttpClient: this.context.spHttpClient,
         spUser: this.context.pageContext.user,
+        webSiteName: this.properties.webSiteName,
       });
 
     ReactDom.render(element, this.domElement);
@@ -36,21 +42,21 @@ export default class IncentivesDashboardWebPart extends BaseClientSideWebPart<un
   protected getPropertyPaneConfiguration(): IPropertyPaneConfiguration {
     return {
       pages: [
-        // {
-        //   header: {
-        //     description: strings.PropertyPaneDescription,
-        //   },
-        //   groups: [
-        //     {
-        //       groupName: strings.BasicGroupName,
-        //       groupFields: [
-        //         PropertyPaneTextField("description", {
-        //           label: strings.DescriptionFieldLabel,
-        //         }),
-        //       ],
-        //     },
-        //   ],
-        // },
+        {
+          header: {
+            description: "Configurações",
+          },
+          groups: [
+            {
+              groupName: "App level",
+              groupFields: [
+                PropertyPaneTextField("webSiteName", {
+                  label: "Url base do site",
+                }),
+              ],
+            },
+          ],
+        },
       ],
     };
   }
