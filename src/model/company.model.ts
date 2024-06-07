@@ -1,9 +1,10 @@
-import { WithSharepointReturnMetadata } from "../interface/sharepoint.interface";
+import { WithSharepointReturnMetadata } from "../webparts/incentivesDashboard/interface/sharepoint.interface";
 
 export interface Company {
   Id: number;
   Title: string;
   Logo: string;
+  Cor: string;
 }
 
 export interface SharepointCompany

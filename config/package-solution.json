@@ -3,7 +3,7 @@
   "solution": {
     "name": "new-wave-ilp-client-side-solution",
     "id": "3744c002-c7ac-4833-ad87-cb823c7a98e2",
-    "version": "1.0.0.0",
+    "version": "1.0.0.1",
     "includeClientSideAssets": true,
     "skipFeatureDeployment": true,
     "isDomainIsolated": false,
@@ -30,7 +30,7 @@
         "title": "new-wave-ilp Feature",
         "description": "The feature that activates elements of the new-wave-ilp solution.",
         "id": "577623e4-bb47-450e-a1d7-c8d763ed5bb1",
-        "version": "1.0.0.0"
+        "version": "1.0.0.1"
       }
     ]
   },

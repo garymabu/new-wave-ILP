@@ -25,7 +25,7 @@ export default (
     startInCompanyDate,
     totalCompanyPoints,
   } :IncentiveAnalyticsCardProps
-) => {
+) : React.ReactElement => {
   return (
     <div style={{marginLeft: exibitionIndex > 0 ? '4px': '0'}} className={styles.incentiveCard}>
       <div className={styles.companyHeaderRow}>

@@ -8,7 +8,7 @@
   "main": "lib/index.js",
   "scripts": {
     "start": "gulp serve",
-    "build": "gulp bundle",
+    "build": "gulp bundle --ship && gulp package-solution --ship",
     "clean": "gulp clean",
     "test": "gulp test"
   },
@@ -29,6 +29,7 @@
   "devDependencies": {
     "@microsoft/eslint-config-spfx": "1.20.1",
     "@microsoft/eslint-plugin-spfx": "1.20.1",
+    "@microsoft/generator-sharepoint": "^1.19.0",
     "@microsoft/rush-stack-compiler-4.7": "0.1.0",
     "@microsoft/sp-build-web": "1.20.1",
     "@microsoft/sp-module-interfaces": "1.20.1",
@@ -40,6 +41,7 @@
     "eslint": "8.7.0",
     "eslint-plugin-react-hooks": "4.3.0",
     "gulp": "4.0.2",
-    "typescript": "4.7.4"
+    "typescript": "4.7.4",
+    "yo": "^5.0.0"
   }
 }

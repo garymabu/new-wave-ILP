@@ -3,18 +3,15 @@ import { TabOptions, type IncentivesDashboardProps } from './incentives-dashboar
 import { IncentivesDashboardConstants } from './incentives-dashboard.constants';
 import styles from './incentives-dashboard.module.scss';
 import ParticipantCard, { ParticipantCardProps } from './participantCard';
-import { UserService } from '../integration/services/user.service';
+import { UserService } from '../../../integration/services/user.service';
 import CalendarIcon from './icons/calendar.icon';
 import IncentiveAnalyticsCard, { IncentiveAnalyticsCardProps } from './incentive-analytics-card';
 import { DedicationType } from '../interface/ilp-business.interface';
-import { SharepointClient } from '../client/sharepoint.client';
-import {ParticipantService} from '../integration/services/participant.service';
+import { SharepointClient } from '../../../client/sharepoint.client';
+import {ParticipantService} from '../../../integration/services/participant.service';
 import { fromSharepointDateToDate } from '../util/date.utils';
-import { CompanyService } from '../integration/services/company.service';
+import { CompanyService } from '../../../integration/services/company.service';
 import { ParticipantWithCompany } from '../interface/dto.interface';
-
-// // eslint-disable-next-line @typescript-eslint/no-var-requires
-// const logoPath = require('../assets/WA_HOR-3D-POSITIVO.png');
 
 const {
   pageTitle,
@@ -26,7 +23,7 @@ export default ({
   spHttpClient,
   spUser,
   webSiteName,
-  }: IncentivesDashboardProps) => {
+  }: IncentivesDashboardProps) : React.ReactElement => {
   const [selectedTab, setSelectedTab] = React.useState(TabOptions.Cards);
   const [
     participantEntries
@@ -66,7 +63,7 @@ export default ({
   participantEntries.map(
     (participantEntry) => ({
       companyLogoUrl: participantEntry.company.Logo,
-      positionInCompany: participantEntry.Cargo,
+      positionInCompany: participantEntry.Cargo?.Title ?? 'N/A',
       dedicationType: participantEntry.Dedica_x00e7__x00e3_o as DedicationType,
       points: parseInt(participantEntry.PNW),
       cap: parseInt(participantEntry.Teto),
@@ -74,38 +71,27 @@ export default ({
       totalCompanyPoints: parseInt(participantEntry.PNW),
     })
   )
-  // [
-  //   {
-  //     companyLogoUrl: logoPath,
-  //     positionInCompany: 'Frontend Developer',
-  //     dedicationType: DedicationType.Exclusiva,
-  //     points: 100,
-  //     cap: 150,
-  //     startInCompanyDate: new Date('2023-03-01'),
-  //     totalCompanyPoints: 500,
-  //   }
-  // ];
 
   console.log('participantEntries', participantEntries)
   console.log('lastUser', lastUser)
 
   const participantCardProps : ParticipantCardProps = {
     currentCompany: lastUser?.company?.Title ?? 'N/A',
-    currentPosition: lastUser?.Cargo,
+    currentPosition: lastUser?.Cargo?.Title ?? 'N/A',
     displayName: spUser.displayName,
     startTimeInCompany: lastUser ? fromSharepointDateToDate(lastUser?.Entrada) : new Date(),
     userPicUrl,
   };
 
-  const getTabStyle = (tabOption: TabOptions) => {
+  const getTabStyle = (tabOption: TabOptions) : string => {
     return selectedTab === tabOption ? styles.tabControlSelected : styles.tabControl;
   }
-  const getIcoStyle = (tabOption: TabOptions) => {
+  const getIcoStyle = (tabOption: TabOptions) : string => {
     return selectedTab === tabOption ? styles.iconSelected : styles.icon;
   }
 
 
-  const Cards = () => {
+  const Cards = () : React.ReactElement => {
     return (
       <div className={styles.cardViewRow}>
         {

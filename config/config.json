@@ -9,10 +9,19 @@
           "manifest": "./src/webparts/incentivesDashboard/IncentivesDashboardWebPart.manifest.json"
         }
       ]
+    },
+    "incentive-analytics-header-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/incentiveAnalyticsHeader/IncentiveAnalyticsHeaderWebPart.js",
+          "manifest": "./src/webparts/incentiveAnalyticsHeader/IncentiveAnalyticsHeaderWebPart.manifest.json"
+        }
+      ]
     }
   },
   "externals": {},
   "localizedResources": {
-    "IncentivesDashboardWebPartStrings": "lib/webparts/incentivesDashboard/loc/{locale}.js"
+    "IncentivesDashboardWebPartStrings": "lib/webparts/incentivesDashboard/loc/{locale}.js",
+    "IncentiveAnalyticsHeaderWebPartStrings": "lib/webparts/incentiveAnalyticsHeader/loc/{locale}.js"
   }
 }
