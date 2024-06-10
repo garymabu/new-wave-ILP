@@ -17,6 +17,7 @@ export default class IncentiveAnalyticsHeaderWebPart extends BaseClientSideWebPa
     const element: React.ReactElement<IncentiveAnalyticsHeaderProps> =
       React.createElement(IncentiveAnalyticsHeader, {
         webSiteName: this.properties.webSiteName,
+        spHttpClient: this.context.spHttpClient,
       });
 
     ReactDom.render(element, this.domElement);

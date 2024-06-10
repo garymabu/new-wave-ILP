@@ -1,7 +1,7 @@
 import {
   SharepointUserODATA,
   WithSharepointReturnMetadata,
-} from "../webparts/incentivesDashboard/interface/sharepoint.interface";
+} from "../interface/sharepoint.interface";
 import { Position } from "./position.model";
 
 export interface Participant {

@@ -1,6 +1,6 @@
 import * as React from 'react';
 import styles from './incentive-analytics-card.module.scss';
-import { DedicationType } from '../../interface/ilp-business.interface';
+import { DedicationType } from '../../../../interface/ilp-business.interface';
 import { getDateDiffUntilTodayInLargestUnit } from '../../util/date.utils';
 
 export interface IncentiveAnalyticsCardProps {
@@ -12,6 +12,7 @@ export interface IncentiveAnalyticsCardProps {
   exibitionIndex: number;
   startInCompanyDate: Date;
   totalCompanyPoints: number;
+  companyColor: string;
 }
 
 export default (
@@ -24,15 +25,17 @@ export default (
     dedicationType,
     startInCompanyDate,
     totalCompanyPoints,
+    companyColor,
   } :IncentiveAnalyticsCardProps
 ) : React.ReactElement => {
+  console.log('IncentiveAnalyticsCardProps', companyColor,)
   return (
     <div style={{marginLeft: exibitionIndex > 0 ? '4px': '0'}} className={styles.incentiveCard}>
-      <div className={styles.companyHeaderRow}>
+      <div className={styles.companyHeaderRow} style={{borderBottom: `2.2px solid ${companyColor}`}}>
         <img className={styles.image} src={companyLogoUrl}/>
         <div className={styles.roleWithLabel}>
           <div>Cargo</div>
-          <span>{positionInCompany}</span>
+          <span style={{backgroundColor: companyColor}}>{positionInCompany}</span>
         </div>
       </div>
       <div className={styles.pointsRow}>

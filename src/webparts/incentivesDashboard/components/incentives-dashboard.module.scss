@@ -61,6 +61,9 @@
   @extend .row;
   justify-content: center;
   margin-top: 8px;
+  width: 100%;
+  justify-content: space-between;
+  flex-wrap: wrap;
 }
 
 // .incentivesDashboard {

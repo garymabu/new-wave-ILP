@@ -6,12 +6,13 @@ import ParticipantCard, { ParticipantCardProps } from './participantCard';
 import { UserService } from '../../../integration/services/user.service';
 import CalendarIcon from './icons/calendar.icon';
 import IncentiveAnalyticsCard, { IncentiveAnalyticsCardProps } from './incentive-analytics-card';
-import { DedicationType } from '../interface/ilp-business.interface';
+import { DedicationType } from '../../../interface/ilp-business.interface';
 import { SharepointClient } from '../../../client/sharepoint.client';
 import {ParticipantService} from '../../../integration/services/participant.service';
 import { fromSharepointDateToDate } from '../util/date.utils';
 import { CompanyService } from '../../../integration/services/company.service';
-import { ParticipantWithCompany } from '../interface/dto.interface';
+import { ParticipantWithCompany, ParticipantWithCompanyAndCompanyAnalytics } from '../../../interface/dto.interface';
+import { AnalyticsService } from '../../../integration/services/analytics.service';
 
 const {
   pageTitle,
@@ -27,7 +28,7 @@ export default ({
   const [selectedTab, setSelectedTab] = React.useState(TabOptions.Cards);
   const [
     participantEntries
-    , setParticipantEntries] = React.useState<ParticipantWithCompany[]>([]);
+    , setParticipantEntries] = React.useState<ParticipantWithCompanyAndCompanyAnalytics[]>([]);
 
   const userService = React.useMemo(()=>new UserService(),[]);
   const sharepointClient = React.useMemo(() => new SharepointClient(spHttpClient, webSiteName), [spHttpClient, webSiteName]);
@@ -41,14 +42,20 @@ export default ({
           async (data) => {
             setParticipantEntries(
               await Promise.all(data.map(
-                async (d) => ({
-                  ...d,
-                  company: (await new CompanyService(sharepointClient).getById(d.Empresa.Id))[0]
-                } as ParticipantWithCompany)
+                async (d) => {
+                  const companyAnalytics = await new AnalyticsService(service).getCompanyAnalytics(d.Empresa.Id);
+                  return({
+                    companyAnalytics,
+                    participant: {
+                      ...d,
+                      company: (await new CompanyService(sharepointClient).getById(d.Empresa.Id))[0],
+                    } as ParticipantWithCompany,
+                  })
+                }
               ))
             );
           }
-        )
+        );
     },
     [sharepointClient]
   )
@@ -56,19 +63,20 @@ export default ({
   const userPicUrl = userService.getUserPicUrl(spUser.email);
 
   const [lastUser] = (participantEntries ?? []).sort(
-    (a, b) => fromSharepointDateToDate(a.Entrada).getTime() - fromSharepointDateToDate(b.Entrada).getTime()
+    (a, b) => fromSharepointDateToDate(a.participant.Entrada).getTime() - fromSharepointDateToDate(b.participant.Entrada).getTime()
   )
 
   const participantCompanyData : Omit<IncentiveAnalyticsCardProps, 'exibitionIndex'>[] =
   participantEntries.map(
     (participantEntry) => ({
-      companyLogoUrl: participantEntry.company.Logo,
-      positionInCompany: participantEntry.Cargo?.Title ?? 'N/A',
-      dedicationType: participantEntry.Dedica_x00e7__x00e3_o as DedicationType,
-      points: parseInt(participantEntry.PNW),
-      cap: parseInt(participantEntry.Teto),
-      startInCompanyDate: fromSharepointDateToDate(participantEntry.Entrada),
-      totalCompanyPoints: parseInt(participantEntry.PNW),
+      companyLogoUrl: participantEntry.participant.company.Logo,
+      positionInCompany: participantEntry.participant.Cargo?.Title ?? 'N/A',
+      dedicationType: participantEntry.participant.Dedica_x00e7__x00e3_o as DedicationType,
+      points: parseInt(participantEntry.participant.PNW),
+      cap: parseInt(participantEntry.participant.Teto),
+      startInCompanyDate: fromSharepointDateToDate(participantEntry.participant.Entrada),
+      totalCompanyPoints: participantEntry.companyAnalytics.totalPoints,
+      companyColor: participantEntry.participant.company.Cor,
     })
   )
 
@@ -76,10 +84,10 @@ export default ({
   console.log('lastUser', lastUser)
 
   const participantCardProps : ParticipantCardProps = {
-    currentCompany: lastUser?.company?.Title ?? 'N/A',
-    currentPosition: lastUser?.Cargo?.Title ?? 'N/A',
+    currentCompany: lastUser?.participant?.company?.Title ?? 'N/A',
+    currentPosition: lastUser?.participant?.Cargo?.Title ?? 'N/A',
     displayName: spUser.displayName,
-    startTimeInCompany: lastUser ? fromSharepointDateToDate(lastUser?.Entrada) : new Date(),
+    startTimeInCompany: lastUser ? fromSharepointDateToDate(lastUser?.participant?.Entrada) : new Date(),
     userPicUrl,
   };
 

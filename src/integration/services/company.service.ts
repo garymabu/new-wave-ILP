@@ -6,8 +6,13 @@ const TABLE_NAME = "Empresas";
 export class CompanyService {
   constructor(private readonly sharepointClient: SharepointClient) {}
 
-  public getAll() {
-    return this.sharepointClient.getListItemsBy<SharepointCompany>(TABLE_NAME);
+  public async getAll() {
+    return (
+      await this.sharepointClient.getListItemsBy<SharepointCompany>(TABLE_NAME)
+    ).map((company) => ({
+      ...company,
+      Logo: this.getCompanyLogoUrl(company.Id.toString(), company.Logo),
+    }));
   }
   public async getById(id: number) {
     return (

@@ -1,34 +1,48 @@
 @import '~@fluentui/react/dist/sass/References.scss';
 
 .incentiveAnalyticsHeader {
-  overflow: hidden;
   padding: 1em;
-  color: "[theme:bodyText, default: #323130]";
-  color: var(--bodyText);
-  &.teams {
-    font-family: $ms-font-family-fallbacks;
+  margin-bottom: 1em;
+  border-radius: 5px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1), 
+    0 6px 20px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.headerLogo {
+  height: 50px;
+}
+
+.detailWithValue {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  margin-left: 8px;
+  flex-grow: 1;
+  div {
+    font-size: 1.1em;
+  }
+  span {
+    font-size: 1.1em;
+    font-weight: bold;
   }
 }
 
-.welcome {
-  text-align: center;
-}
-
-.welcomeImage {
-  width: 100%;
-  max-width: 420px;
-}
-
-.links {
-  a {
-    text-decoration: none;
-    color: "[theme:link, default:#03787c]";
-    color: var(--link); // note: CSS Custom Properties support is limited to modern browsers only
-
-    &:hover {
-      text-decoration: underline;
-      color: "[theme:linkHovered, default: #014446]";
-      color: var(--linkHovered); // note: CSS Custom Properties support is limited to modern browsers only
-    }
+.settlementSpace {
+  margin-left: 4px;
+  button {
+    border-radius: 6px;
+    border: 0px;
+    cursor: pointer;
+    padding: 0.5em 1em;
+    color: white;
+    background-color: #4884AB;
   }
 }
