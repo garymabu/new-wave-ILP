@@ -47,7 +47,7 @@ export default ({
         );
       }
     }, [selectedCompany]
-  )
+  );
 
   return (
     <section className={styles.incentiveAnalyticsHeader}>
@@ -90,7 +90,7 @@ export default ({
               <span>
                 {
                   formatCurrency(
-                    selectedCompany.ValorporPonto * selectedCompanyAnalytics.totalPoints
+                    Number(selectedCompany.Valor_x0020_Distribuido)
                   )
                 }
               </span>
@@ -100,7 +100,7 @@ export default ({
               <span>
                 {
                   formatCurrency(
-                    selectedCompanyAnalytics.capSum * selectedCompany.ValorporPonto
+                    selectedCompany.ValorAlvo
                   )
                 }
               </span>
@@ -113,10 +113,11 @@ export default ({
             isSettlementModalOpen &&
             <SettlementModal
               onClose={() => {setIsSettlementModalOpen(false)}}
-              onSubmit={() => {console.log('submiting')}}
+              onSubmit={() => {setIsSettlementModalOpen(false)}}
               participantAmount={selectedCompanyAnalytics?.totalParticipants}
+              companyName={selectedCompany.Title}
               settlementValue={formatCurrency(
-                selectedCompany?.ValorporPonto * selectedCompanyAnalytics?.totalPoints
+                Number(selectedCompany.Valor_x0020_Distribuido)
               )}
             />
           }

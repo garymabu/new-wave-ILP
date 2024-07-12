@@ -6,6 +6,8 @@ export interface Company {
   Logo: string;
   Cor: string;
   ValorporPonto: number;
+  Valor_x0020_Distribuido: string;
+  ValorAlvo: number;
 }
 
 export interface SharepointCompany
