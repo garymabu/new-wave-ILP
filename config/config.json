@@ -1,0 +1,27 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/spfx-build/config.2.0.schema.json",
+  "version": "2.0",
+  "bundles": {
+    "incentives-dashboard-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/incentivesDashboard/IncentivesDashboardWebPart.js",
+          "manifest": "./src/webparts/incentivesDashboard/IncentivesDashboardWebPart.manifest.json"
+        }
+      ]
+    },
+    "incentive-analytics-header-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/incentiveAnalyticsHeader/IncentiveAnalyticsHeaderWebPart.js",
+          "manifest": "./src/webparts/incentiveAnalyticsHeader/IncentiveAnalyticsHeaderWebPart.manifest.json"
+        }
+      ]
+    }
+  },
+  "externals": {},
+  "localizedResources": {
+    "IncentivesDashboardWebPartStrings": "lib/webparts/incentivesDashboard/loc/{locale}.js",
+    "IncentiveAnalyticsHeaderWebPartStrings": "lib/webparts/incentiveAnalyticsHeader/loc/{locale}.js"
+  }
+}

@@ -1,0 +1,130 @@
+@import '~@fluentui/react/dist/sass/References.scss';
+@import '../incentives-dashboard.module.scss';
+
+.incentiveCard {
+  @extend .cardSmall;
+  min-width: 300px;
+  max-width: 400px;
+  flex: 1;
+  padding-left: 0px;
+  padding-right: 0px;
+}
+
+.companyHeaderRow {
+  @extend .row;
+  height: 50px;
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.roleWithLabel {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  align-items: center;
+  max-width: 40%;
+  div {
+    font-size: 1.1em;
+    font-weight: bold;
+    margin-left: 2px;
+    width: 100%;
+  }
+  span {
+    font-size: 0.8em;
+    color: white;
+    flex: 1;
+    display: flex;
+    align-items: center;
+    padding: 0px 3px;
+    width: CALC(100% - 6px);
+    text-align: center;
+  }
+}
+
+.pointsRow {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  margin-top: 15px;
+  width: CALC(100% - 12px);
+  border-bottom: 1px solid #C8C8C8;
+  margin-left: 6px;
+  margin-right: 6px;
+  padding-bottom: 10px;
+}
+
+.image {
+  height: 100%;
+  border-radius: 50%;
+  margin-right: 1em;
+}
+
+.pointsCol {
+  margin-left: 5px;
+  width: 65%;
+  display: flex;
+  flex-direction: column;
+}
+
+.pointsCol .label {
+  font-size: 1.5em;
+  color: #4884AB;
+  font-weight: bold;
+}
+
+.pointsCol .value {
+  font-size: 2.3em;
+  font-weight: bold;
+  color: #4884AB;
+}
+
+.pointsCol .cap {
+  font-size: 2.3em;
+  font-weight: bold;
+  color: #AEAEAE;
+}
+
+.dedicationCol {
+  width: 35%;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+}
+
+.dedicationCol .dedicationVal {
+  font-size: 1.3em;
+  font-weight: bold;
+}
+
+.detailsHeaderRow {
+  margin-top: 5px;
+  margin-left: 8px;
+  p {
+    font-size: 1.2em;
+    margin: 0;
+    color: #4884AB;
+  }
+}
+
+.detailsRow {
+  margin-top: 5px;
+  display: flex;
+  margin-bottom: 4px;
+}
+
+.detailWithValue {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  margin-left: 8px;
+  flex-grow: 1;
+  div {
+    font-size: 1.1em;
+  }
+  span {
+    font-size: 1.1em;
+    font-weight: bold;
+  }
+}

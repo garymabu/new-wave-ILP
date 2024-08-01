@@ -1,0 +1,48 @@
+@import '~@fluentui/react/dist/sass/References.scss';
+
+.incentiveAnalyticsHeader {
+  padding: 1em;
+  margin-bottom: 1em;
+  border-radius: 5px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1), 
+    0 6px 20px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.headerLogo {
+  height: 50px;
+}
+
+.detailWithValue {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  margin-left: 8px;
+  flex-grow: 1;
+  div {
+    font-size: 1.1em;
+  }
+  span {
+    font-size: 1.1em;
+    font-weight: bold;
+  }
+}
+
+.settlementSpace {
+  margin-left: 4px;
+  button {
+    border-radius: 6px;
+    border: 0px;
+    cursor: pointer;
+    padding: 0.5em 1em;
+    color: white;
+    background-color: #4884AB;
+  }
+}
