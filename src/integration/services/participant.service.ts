@@ -24,7 +24,7 @@ export class ParticipantService {
   ): Promise<SharepointParticipant[]> {
     return this.sharepointClient.getListItemsBy<SharepointParticipant>(
       TABLE_NAME,
-      `Empresa/Id eq ${companyId}`,
+      `Empresa/Id eq ${companyId} and Ativo eq 1`,
       DEFAULT_FIELD_SELECTION,
       DEFAULT_EXPAND
     );

@@ -13,6 +13,7 @@ import { fromSharepointDateToDate } from '../util/date.utils';
 import { CompanyService } from '../../../integration/services/company.service';
 import { ParticipantWithCompany, ParticipantWithCompanyAndCompanyAnalytics } from '../../../interface/dto.interface';
 import { AnalyticsService } from '../../../integration/services/analytics.service';
+import { FileService } from '../../../integration/services/file.service';
 
 const {
   pageTitle,
@@ -32,6 +33,8 @@ export default ({
 
   const userService = React.useMemo(()=>new UserService(),[]);
   const sharepointClient = React.useMemo(() => new SharepointClient(spHttpClient, webSiteName), [spHttpClient, webSiteName]);
+  const fileService = React.useMemo(() => new FileService(sharepointClient), [sharepointClient]);
+  const companyService = React.useMemo(() => new CompanyService(sharepointClient, fileService),[sharepointClient]);
 
   React.useEffect(
     () : void => {
@@ -48,7 +51,7 @@ export default ({
                     companyAnalytics,
                     participant: {
                       ...d,
-                      company: (await new CompanyService(sharepointClient).getById(d.Empresa.Id))[0],
+                      company: (await companyService.getById(d.Empresa.Id))[0],
                     } as ParticipantWithCompany,
                   })
                 }
@@ -69,7 +72,7 @@ export default ({
   const participantCompanyData : Omit<IncentiveAnalyticsCardProps, 'exibitionIndex'>[] =
   participantEntries.map(
     (participantEntry) => ({
-      companyLogoUrl: participantEntry.participant.company.Logo,
+      companyLogoUrl: participantEntry.participant.company.LogoUrl ?? '',
       positionInCompany: participantEntry.participant.Cargo?.Title ?? 'N/A',
       dedicationType: participantEntry.participant.Dedica_x00e7__x00e3_o as DedicationType,
       points: parseInt(participantEntry.participant.PNW),

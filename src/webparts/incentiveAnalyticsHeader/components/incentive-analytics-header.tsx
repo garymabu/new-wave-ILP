@@ -9,6 +9,8 @@ import { ParticipantService } from '../../../integration/services/participant.se
 import { AnalyticsService } from '../../../integration/services/analytics.service';
 import { formatCurrency } from '../../incentivesDashboard/util/string.utils';
 import SettlementModal from './settlementModal/settlement-modal';
+import { LiquidationService } from '../../../integration/services/liquidation.service';
+import { FileService } from '../../../integration/services/file.service';
 
 export default ({
   webSiteName,
@@ -20,8 +22,10 @@ export default ({
   const [isSettlementModalOpen, setIsSettlementModalOpen] = React.useState<boolean>(false);
 
   const sharepointClient = React.useMemo(() => new SharepointClient(spHttpClient, webSiteName), [spHttpClient, webSiteName]);
-  const companyService = React.useMemo(() => new CompanyService(sharepointClient), [sharepointClient])
+  const fileService = React.useMemo(() => new FileService(sharepointClient), []);
+  const companyService = React.useMemo(() => new CompanyService(sharepointClient, fileService), [sharepointClient])
   const participantService = React.useMemo(() => new ParticipantService(sharepointClient), [sharepointClient]);
+  const liquidationService = React.useMemo(() => new LiquidationService(), []);
 
   React.useEffect(
     () : void => {
@@ -49,6 +53,13 @@ export default ({
     }, [selectedCompany]
   );
 
+  const valueByPoint = (
+    selectedCompanyAnalytics?.totalPoints
+    ? (Number(selectedCompany?.Valor_x0020_Distribuido) ?? 0)/selectedCompanyAnalytics?.totalPoints : 0
+  )
+  
+  console.log('valor distribuido', Number(selectedCompany?.Valor_x0020_Distribuido) ?? 0, selectedCompanyAnalytics?.totalPoints)
+
   return (
     <section className={styles.incentiveAnalyticsHeader}>
       <div>
@@ -72,31 +83,42 @@ export default ({
         selectedCompanyAnalytics &&
         <>
           <div className={styles.header}>
-            <img className={styles.headerLogo} src={selectedCompany.Logo}/>
+            <img className={styles.headerLogo} src={selectedCompany.LogoUrl}/>
             <div className={styles.detailWithValue}>
-              <div>Pontuação do Negócio</div>
+              <div>Total de pontos distribuidos</div>
               <span>
                 {selectedCompanyAnalytics.totalPoints}
               </span>
             </div>
             <div className={styles.detailWithValue}>
-              <div>Participantes</div>
+              <div>Total de Participantes</div>
               <span>
                 {selectedCompanyAnalytics.totalParticipants}
               </span>
             </div>
             <div className={styles.detailWithValue}>
-              <div>Valor do Negócio Atual</div>
+              <div>Valor unitário do ponto</div>
               <span>
                 {
+                  Number(valueByPoint) < 0.01 ? 'menor que R$0.01' :
                   formatCurrency(
-                    Number(selectedCompany.Valor_x0020_Distribuido)
+                    valueByPoint
                   )
                 }
               </span>
             </div>
             <div className={styles.detailWithValue}>
-              <div>Valor Alvo</div>
+              <div>Valor Inicial do Negócio</div>
+              <span>
+                {
+                  formatCurrency(
+                    selectedCompany.ValorporPonto
+                  )
+                }
+              </span>
+            </div>
+            <div className={styles.detailWithValue}>
+              <div>Valor Final do Negócio</div>
               <span>
                 {
                   formatCurrency(
@@ -113,7 +135,13 @@ export default ({
             isSettlementModalOpen &&
             <SettlementModal
               onClose={() => {setIsSettlementModalOpen(false)}}
-              onSubmit={() => {setIsSettlementModalOpen(false)}}
+              onSubmit={async () => {setIsSettlementModalOpen(false);
+                await liquidationService.liquidateCompany(
+                  selectedCompany.Id,
+                  Number(selectedCompany.Valor_x0020_Distribuido),
+                  Number(selectedCompany.ValorporPonto),
+                  Number(selectedCompany.ValorAlvo)
+              ) }}
               participantAmount={selectedCompanyAnalytics?.totalParticipants}
               companyName={selectedCompany.Title}
               settlementValue={formatCurrency(
