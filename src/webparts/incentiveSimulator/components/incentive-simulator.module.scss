@@ -1,0 +1,52 @@
+@import '~@fluentui/react/dist/sass/References.scss';
+
+.incentiveSimulatorContainer {
+  font-size: 1em;
+  display: flex;
+  flex-direction: column;
+}
+
+.participantRow {
+  display: flex;
+  flex-direction: row;
+  margin-bottom: 10px;
+  text-align: center;
+  p {
+    display: flex;
+    align-items: center;
+  }
+}
+
+.participantHeader {
+  font-weight: bold;
+  font-size: 1.2em;
+  margin-right: 1em;
+}
+
+.incentiveSimulatorTable {
+  margin-top: 20px;
+  min-width: 600px;
+}
+
+.incentiveSimulatorSelections {
+  display: flex;
+  flex-direction: column;
+  width: 49%;
+}
+
+.incentiveSimulatorCalendar {
+  display: flex;
+  flex-direction: column;
+  width: 49%;
+}
+
+.inputContainer {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+.select {
+  width: 300px;
+  height: 52px;
+}

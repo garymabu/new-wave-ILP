@@ -35,7 +35,7 @@ export class SharepointClient {
     return data.value;
   }
 
-  getBasePath() {
+  getBasePath() :string {
     return this.basePath;
   }
 }

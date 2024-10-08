@@ -11,6 +11,24 @@
   z-index: 9999;
 }
 
+.partialSettlementSelector {
+  display: flex;
+}
+
+.partialSettlementInput {
+  width: 20%;
+}
+
+.partialSettlementContainer {
+  display: flex;
+}
+
+.partialSettlementText {
+  margin-top: 0;
+  margin-right: 1em;
+  margin-bottom: 0;
+}
+
 .settlementModalContent {
   background-color: white;
   padding: 1em;

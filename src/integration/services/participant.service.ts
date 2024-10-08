@@ -3,7 +3,7 @@ import { SharepointParticipant } from "../../model/participant.model";
 
 const TABLE_NAME = "Elegíveis";
 const DEFAULT_FIELD_SELECTION =
-  "Participante/Id,Participante/JobTitle,Participante/EMail,Entrada,Cargo/Title,Dedica_x00e7__x00e3_o,PNW,Teto,Empresa/Title,Empresa/Id,Empresa/Cor";
+  "Participante/Id,Participante/JobTitle,Participante/FirstName,Participante/LastName,Participante/EMail,Entrada,Cargo/Teto,Cargo/field_1,Cargo/field_4,Cargo/Title,Dedica_x00e7__x00e3_o,PNW,Empresa/Title,Empresa/Id,Empresa/Cor,Unvested_x0020_Points";
 const DEFAULT_EXPAND = "Participante,Empresa,Cargo";
 
 export class ParticipantService {

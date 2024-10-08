@@ -9,6 +9,8 @@ export interface SharepointUserODATA {
   EMail: string;
   Id: number;
   JobTitle: string;
+  FirstName: string;
+  LastName: string;
 }
 
 export type WithSharepointReturnMetadata<T = unknown> = T & {

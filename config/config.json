@@ -17,11 +17,29 @@
           "manifest": "./src/webparts/incentiveAnalyticsHeader/IncentiveAnalyticsHeaderWebPart.manifest.json"
         }
       ]
+    },
+    "home-links-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/homeLinks/HomeLinksWebPart.js",
+          "manifest": "./src/webparts/homeLinks/HomeLinksWebPart.manifest.json"
+        }
+      ]
+    },
+    "incentive-simulator-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/incentiveSimulator/IncentiveSimulatorWebPart.js",
+          "manifest": "./src/webparts/incentiveSimulator/IncentiveSimulatorWebPart.manifest.json"
+        }
+      ]
     }
   },
   "externals": {},
   "localizedResources": {
     "IncentivesDashboardWebPartStrings": "lib/webparts/incentivesDashboard/loc/{locale}.js",
-    "IncentiveAnalyticsHeaderWebPartStrings": "lib/webparts/incentiveAnalyticsHeader/loc/{locale}.js"
+    "IncentiveAnalyticsHeaderWebPartStrings": "lib/webparts/incentiveAnalyticsHeader/loc/{locale}.js",
+    "HomeLinksWebPartStrings": "lib/webparts/homeLinks/loc/{locale}.js",
+    "IncentiveSimulatorWebPartStrings": "lib/webparts/incentiveSimulator/loc/{locale}.js"
   }
 }
