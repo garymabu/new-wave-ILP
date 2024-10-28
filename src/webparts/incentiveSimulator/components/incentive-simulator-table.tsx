@@ -12,6 +12,7 @@ export interface IncentiveSimulatorTableRow {
   unvestedPoints: number;
   referenceDate: string;
   pointsPerYear: number;
+  startDate: string;
 }
 
 export interface IncentiveSimulatorTableProps {
@@ -19,7 +20,6 @@ export interface IncentiveSimulatorTableProps {
 }
 
 const IncentiveSimulatorTable = ({ selectedParticipantData }: IncentiveSimulatorTableProps) => {
-  console.log('selectedParticipantData', selectedParticipantData);
   return (
     <div className={styles.incentiveSimulatorTable}>
       <TableContainer component={Paper}>
@@ -27,6 +27,7 @@ const IncentiveSimulatorTable = ({ selectedParticipantData }: IncentiveSimulator
           <TableHead>
             <TableRow>
               <TableCell>Nome</TableCell>
+              <TableCell>Data de Entrada</TableCell>
               <TableCell>Email</TableCell>
               <TableCell>Cargo</TableCell>
               <TableCell>Empresa</TableCell>
@@ -42,6 +43,7 @@ const IncentiveSimulatorTable = ({ selectedParticipantData }: IncentiveSimulator
               selectedParticipantData.map((participant) => (
                 <TableRow key={`${participant.email} ${participant.referenceDate}`}>
                   <TableCell>{participant.name}</TableCell>
+                  <TableCell>{participant.startDate}</TableCell>
                   <TableCell>{participant.email}</TableCell>
                   <TableCell>{participant.jobTitle}</TableCell>
                   <TableCell>{participant.companyName}</TableCell>
@@ -53,30 +55,6 @@ const IncentiveSimulatorTable = ({ selectedParticipantData }: IncentiveSimulator
                 </TableRow>
               ))
             }
-            {/* <TableRow className={styles.participantRow}>
-              <TableCell className={styles.participantHeader}>Nome:</TableCell>
-              <TableCell>{selectedParticipant.Participante.FirstName} {selectedParticipant.Participante.LastName}</TableCell>
-            </TableRow>
-            <TableRow className={styles.participantRow}>
-              <TableCell className={styles.participantHeader}>Email:</TableCell>
-              <TableCell>{selectedParticipant.Participante.EMail}</TableCell>
-            </TableRow>
-            <TableRow className={styles.participantRow}>
-              <TableCell className={styles.participantHeader}>Cargo:</TableCell>
-              <TableCell>{selectedParticipant.Cargo.Title}</TableCell>
-            </TableRow>
-            <TableRow className={styles.participantRow}>
-              <TableCell className={styles.participantHeader}>Empresa:</TableCell>
-              <TableCell>{selectedParticipant.Empresa.Title}</TableCell>
-            </TableRow>
-            <TableRow className={styles.participantRow}>
-              <TableCell className={styles.participantHeader}>Pontuação Vested:</TableCell>
-              <TableCell>{selectedParticipant.PNW}</TableCell>
-            </TableRow>
-            <TableRow className={styles.participantRow}>
-              <TableCell className={styles.participantHeader}>Pontuação Unvested:</TableCell>
-              <TableCell>{selectedParticipant.Unvested_x0020_Points}</TableCell>
-            </TableRow> */}
           </TableBody>
         </Table>
       </TableContainer>

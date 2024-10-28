@@ -112,7 +112,8 @@ export default function IncentiveSimulator({
         vestedPoints: (unceiledVestedPoints  < 0 ? 0 : newVestedPoints),
         unvestedPoints: (newUnvestedPoints < 0 ? 0 : newUnvestedPoints),
         referenceDate,
-        pointsPerYear
+        pointsPerYear,
+        startDate: selectedParticipant?.Entrada ? new Date(selectedParticipant?.Entrada).toISOString().split('T')[0] : "",
       }
     }
   );
