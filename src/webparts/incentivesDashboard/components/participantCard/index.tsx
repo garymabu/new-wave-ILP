@@ -1,6 +1,6 @@
 import * as React from 'react';
 import styles from './participant-card.module.scss';
-import { getDateDiffUntilTodayInLargestUnit } from '../../util/date.utils';
+import { getDateDiffUntilTodayInLargestUnit } from '../../../../util/date.utils';
 
 export interface ParticipantCardProps {
   displayName: string;

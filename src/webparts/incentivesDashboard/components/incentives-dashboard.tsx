@@ -9,16 +9,16 @@ import IncentiveAnalyticsCard, { IncentiveAnalyticsCardProps } from './incentive
 import { DedicationType } from '../../../interface/ilp-business.interface';
 import { SharepointClient } from '../../../client/sharepoint.client';
 import {ParticipantService} from '../../../integration/services/participant.service';
-import { fromSharepointDateToDate } from '../util/date.utils';
+import { fromSharepointDateToDate } from '../../../util/date.utils';
 import { CompanyService } from '../../../integration/services/company.service';
 import { ParticipantWithCompany, ParticipantWithCompanyAndCompanyAnalytics } from '../../../interface/dto.interface';
 import { AnalyticsService } from '../../../integration/services/analytics.service';
 import { FileService } from '../../../integration/services/file.service';
+import { buildTree, collectPaths } from '../../../util/tree.utils';
 
 const {
   pageTitle,
 } = IncentivesDashboardConstants;
-
 
 export default ({
   // spHttpClient,
@@ -46,7 +46,10 @@ export default ({
             setParticipantEntries(
               await Promise.all(data.map(
                 async (d) => {
-                  const companyAnalytics = await new AnalyticsService(service).getCompanyAnalytics(d.Empresa.Id);
+                  const companyAnalytics = await new AnalyticsService(
+                    service
+                    // companyService
+                  ).getCompanyAnalytics(d.Empresa.Id);
                   return({
                     companyAnalytics,
                     participant: {
@@ -69,6 +72,8 @@ export default ({
     (a, b) => fromSharepointDateToDate(a.participant.Entrada).getTime() - fromSharepointDateToDate(b.participant.Entrada).getTime()
   )
 
+  console.log('participantEntries', participantEntries);
+
   const participantCompanyData : Omit<IncentiveAnalyticsCardProps, 'exibitionIndex'>[] =
   participantEntries.map(
     (participantEntry) => ({
@@ -76,15 +81,17 @@ export default ({
       positionInCompany: participantEntry.participant.Cargo?.Title ?? 'N/A',
       dedicationType: participantEntry.participant.Dedica_x00e7__x00e3_o as DedicationType,
       points: parseInt(participantEntry.participant.PNW),
-      cap: parseInt(participantEntry.participant.Teto),
+      cap: parseInt(participantEntry.participant.Cargo.Teto),
       startInCompanyDate: fromSharepointDateToDate(participantEntry.participant.Entrada),
       totalCompanyPoints: participantEntry.companyAnalytics.totalPoints,
       companyColor: participantEntry.participant.company.Cor,
+      parentCompanyId: participantEntry.participant.company.Grupo_x0020_EconomicoId,
+      companyId: participantEntry.participant.company.Id.toString(),
     })
   )
 
-  console.log('participantEntries', participantEntries)
-  console.log('lastUser', lastUser)
+  console.log('participantCompanyData', participantCompanyData);
+  console.log('lastUser', lastUser);
 
   const participantCardProps : ParticipantCardProps = {
     currentCompany: lastUser?.participant?.company?.Title ?? 'N/A',
@@ -101,13 +108,53 @@ export default ({
     return selectedTab === tabOption ? styles.iconSelected : styles.icon;
   }
 
-
   const Cards = () : React.ReactElement => {
     return (
       <div className={styles.cardViewRow}>
         {
           participantCompanyData.map((participantData, i) => (
             <IncentiveAnalyticsCard key={participantData.companyLogoUrl} {...participantData} exibitionIndex={i} />
+          ))
+        }
+      </div>
+    )
+  }
+
+  const Organogram = () : React.ReactElement => {
+    const participantCompanyTree = buildTree(participantCompanyData);
+    const participantCompanyPaths = participantCompanyTree
+      .map((root) => collectPaths(root))
+      .reduce((acc, val) => acc.concat(val), []);
+
+    return (
+      <div className={styles.organogramViewRow}>
+        {
+          participantCompanyPaths.map((participantCompanyPath) => (
+            <div
+              className={styles.organogramTreeRootGroup}
+              key={participantCompanyPath.map(item => item.companyId).join(',')}
+            >
+              {
+                participantCompanyPath[0] && (
+                  <IncentiveAnalyticsCard
+                    {...participantCompanyPath[0]}
+                    exibitionIndex={0}
+                  />
+                )
+              }
+              {
+                participantCompanyPath.slice(1).map((participantCompanyNode, i) => (
+                  <>
+                    <span className={styles.organogramTreeRootLine} key={participantCompanyNode.companyId}/>
+                    <IncentiveAnalyticsCard
+                      key={participantCompanyNode.companyLogoUrl}
+                      {...participantCompanyNode}
+                      exibitionIndex={i}
+                    />
+                  </>
+                ))
+              }
+            </div>
           ))
         }
       </div>
@@ -130,7 +177,7 @@ export default ({
       </div>
       <div>
         {selectedTab === TabOptions.Cards && <Cards/>}
-        {selectedTab === TabOptions.Organograma && <Cards/>}
+        {selectedTab === TabOptions.Organograma && <Organogram/>}
       </div>
     </section>
   );

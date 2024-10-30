@@ -10,22 +10,11 @@ import { ParticipantService } from '../../../integration/services/participant.se
 import IncentiveSimulatorTable, { IncentiveSimulatorTableRow } from './incentive-simulator-table';
 import { DatePicker, LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
-import { addDays, addYears } from 'date-fns';
+import { addDays } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
-
-
-function generateYearlyDates(startDate: Date, targetDate: Date): Date[] {
-  const dates: Date[] = [];
-  let currentDate = startDate;
-
-  // eslint-disable-next-line no-unmodified-loop-condition
-  while (currentDate <= targetDate) {
-    dates.push(currentDate);
-    currentDate = addYears(currentDate, 1);
-  }
-
-  return dates;
-}
+import { calculateParticipantPointsAndValues } from '../../../helper/new-wave-incentive-calculation.helper';
+import { PositionService } from '../../../integration/services/position.service';
+import { CompletePosition } from '../../../model/position.model';
 
 export default function IncentiveSimulator({
   spHttpClient,
@@ -37,10 +26,13 @@ export default function IncentiveSimulator({
   const [selectedParticipant, setSelectedParticipant] = React.useState<SharepointParticipant>();
   const [projectionDate, setProjectionDate] = React.useState<Date>(addDays(new Date(), 1));
 
+  const [positions, setPositions] = React.useState<CompletePosition[]>([]);
+
   const sharepointClient = React.useMemo(() => new SharepointClient(spHttpClient, webSiteName), [spHttpClient, webSiteName]);
   const fileService = React.useMemo(() => new FileService(sharepointClient), []);
   const companyService = React.useMemo(() => new CompanyService(sharepointClient, fileService), [sharepointClient])
   const participantService = React.useMemo(() => new ParticipantService(sharepointClient), [sharepointClient])
+  const positionService = React.useMemo(() => new PositionService(sharepointClient), [sharepointClient])
 
   React.useEffect(
     () : void => {
@@ -71,58 +63,87 @@ export default function IncentiveSimulator({
     }
   , [selectedCompany, participantService]);
 
+  React.useEffect(
+    () : void => {
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
+      positionService.getAllPositions().then(
+        (data) => {
+          setPositions(data);
+        }
+      )
+    }
+  , [positionService]);
+
   const dedication = selectedParticipant?.Dedica_x00e7__x00e3_o ?? Dedication.EXCLUSIVO;
   const pointsPerYear = Number((dedication === Dedication.EXCLUSIVO ? selectedParticipant?.Cargo.field_1 : selectedParticipant?.Cargo.field_4) ?? '0');
 
-  const projectionDates = generateYearlyDates(new Date(), projectionDate);
-
   console.log('projectionDate', projectionDate);
-  console.log('projectionDates', projectionDates);
+  // console.log('projectionDates', projectionDates);
+  // const companyValue = Number(selectedCompany?.Valor_x0020_Distribuido ?? '0');
 
-  const vestingLimitYearAmount = 3;
+  // we have selective and direct participants, that is defined by their position.
+  // in order to have the liquidation value of a participant, we need both the selective and direct points
 
-  const vestedPoints = Number(selectedParticipant?.PNW ?? '0');
-  const unvestedPoints = Number(selectedParticipant?.Unvested_x0020_Points ?? '0');
-  const ceiling = Number(selectedParticipant?.Cargo?.Teto ?? '0');
 
-  const selectedParticipantData: IncentiveSimulatorTableRow[] = projectionDates.map(
-    (date, position) => {
-      const referenceDate = date.toISOString().split('T')[0];
-
-      const yearsSinceVesting = ((unvestedPoints/pointsPerYear) + position) - vestingLimitYearAmount;
-
-      const maxUnvestedPoints = Math.max(vestingLimitYearAmount * pointsPerYear, unvestedPoints);
-
-      const unceiledVestedPoints = yearsSinceVesting >= 0 ? vestedPoints + (pointsPerYear * yearsSinceVesting) : vestedPoints;
-      const newVestedPoints = unceiledVestedPoints >= ceiling ? ceiling : unceiledVestedPoints;
-      const newUnvestedPoints = yearsSinceVesting < 0 ? (yearsSinceVesting + vestingLimitYearAmount) * pointsPerYear : (
-        (newVestedPoints + maxUnvestedPoints) >= ceiling ? (
-          ceiling - newVestedPoints
-        ) : (
-          maxUnvestedPoints
-        )
-      )
-
-      return {
-        name: `${selectedParticipant?.Participante.FirstName} ${selectedParticipant?.Participante.LastName}`,
-        email: selectedParticipant?.Participante.EMail ?? '',
-        jobTitle: selectedParticipant?.Cargo.Title ?? '',
-        companyName: selectedParticipant?.Empresa.Title ?? '',
-        dedication,
-        vestedPoints: (unceiledVestedPoints  < 0 ? 0 : newVestedPoints),
-        unvestedPoints: (newUnvestedPoints < 0 ? 0 : newUnvestedPoints),
-        referenceDate,
-        pointsPerYear,
-        startDate: selectedParticipant?.Entrada ? new Date(selectedParticipant?.Entrada).toISOString().split('T')[0] : "",
+  const selectedParticipantData: IncentiveSimulatorTableRow[] = 
+    projectionDate && selectedParticipant && participants?.length && selectedCompany && positions?.length ?
+    calculateParticipantPointsAndValues(projectionDate, selectedParticipant, participants, selectedCompany, positions).map(
+      (data) => {
+        return {
+          ...data,
+          name: `${selectedParticipant?.Participante.FirstName} ${selectedParticipant?.Participante.LastName}`,
+          email: selectedParticipant?.Participante.EMail ?? '',
+          jobTitle: selectedParticipant?.Cargo.Title ?? '',
+          companyName: selectedParticipant?.Empresa.Title ?? '',
+          dedication,
+          pointsPerYear,
+          startDate: selectedParticipant?.Entrada ? new Date(selectedParticipant?.Entrada).toISOString().split('T')[0] : "",
+          percentageOfExtraordinaryValue: selectedParticipant.Porcentagem_x0020_do_x0020_valor
+        }
       }
-    }
-  );
+    ) : []
+  // projectionDates.map(
+  //   (date, position) => {
+  //     const referenceDate = date.toISOString().split('T')[0];
+
+  //     const yearsSinceVesting = ((unvestedPoints/pointsPerYear) + position) - vestingLimitYearAmount;
+
+  //     const maxUnvestedPoints = Math.max(vestingLimitYearAmount * pointsPerYear, unvestedPoints);
+
+  //     const unceiledVestedPoints = yearsSinceVesting >= 0 ? vestedPoints + (pointsPerYear * yearsSinceVesting) : vestedPoints;
+  //     const newVestedPoints = unceiledVestedPoints >= ceiling ? ceiling : unceiledVestedPoints;
+  //     const newUnvestedPoints = yearsSinceVesting < 0 ? (yearsSinceVesting + vestingLimitYearAmount) * pointsPerYear : (
+  //       (newVestedPoints + maxUnvestedPoints) >= ceiling ? (
+  //         ceiling - newVestedPoints
+  //       ) : (
+  //         maxUnvestedPoints
+  //       )
+  //     )
+
+  //     return {
+  //       name: `${selectedParticipant?.Participante.FirstName} ${selectedParticipant?.Participante.LastName}`,
+  //       email: selectedParticipant?.Participante.EMail ?? '',
+  //       jobTitle: selectedParticipant?.Cargo.Title ?? '',
+  //       companyName: selectedParticipant?.Empresa.Title ?? '',
+  //       dedication,
+  //       vestedPoints: (unceiledVestedPoints  < 0 ? 0 : newVestedPoints),
+  //       unvestedPoints: (newUnvestedPoints < 0 ? 0 : newUnvestedPoints),
+  //       referenceDate,
+  //       pointsPerYear,
+  //       startDate: selectedParticipant?.Entrada ? new Date(selectedParticipant?.Entrada).toISOString().split('T')[0] : "",
+  //       estimatedSettlementValue: 10,
+  //     }
+  //   }
+  // );
   
 
   return (
     <LocalizationProvider dateAdapter={AdapterDateFns} adapterLocale={ptBR}> 
       <div className={styles.incentiveSimulatorContainer}>
-        <h1>Simulador de pontuações</h1>
+        <div className={styles.headerRow}>
+          <h1>Simulador de elegíveis</h1>
+          <p className={styles.headerDisclaimer}>*O cálculo de valor considera que outros participantes também receberão pontos, e que, a liquidação será feita de forma completa. É possível que o valor seja diferente em determinado momento dependendo do percentual do valor extraordinário e de eventuais eventos que possam afetar o escopo do simulador, como por exemplo uma troca de cargos.</p>
+        </div>
         <div className={styles.inputContainer}>
           <div className={styles.incentiveSimulatorSelections}>
             <p>Selecione a empresa</p>
@@ -155,7 +176,6 @@ export default function IncentiveSimulator({
             <DatePicker
               value={projectionDate}
               onChange={(date) => setProjectionDate(date || new Date())}
-
             />
           </div>
         </div>

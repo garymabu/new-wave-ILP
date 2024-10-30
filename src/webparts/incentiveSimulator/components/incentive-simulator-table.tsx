@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper } from '@mui/material';
 import styles from './incentive-simulator.module.scss';
+import { formatCurrency } from '../../../util/string.utils';
 
 export interface IncentiveSimulatorTableRow {
   name: string;
@@ -12,7 +13,11 @@ export interface IncentiveSimulatorTableRow {
   unvestedPoints: number;
   referenceDate: string;
   pointsPerYear: number;
+  percentageOfExtraordinaryValue: number;
   startDate: string;
+  estimatedSettlementValue: number;
+  estimatedExtraordinarySettlementValue: number;
+  estimatedOrdinarySettlementValue: number;
 }
 
 export interface IncentiveSimulatorTableProps {
@@ -36,6 +41,10 @@ const IncentiveSimulatorTable = ({ selectedParticipantData }: IncentiveSimulator
               <TableCell>Pontuação Unvested</TableCell>
               <TableCell>Pontos por Ano</TableCell>
               <TableCell>Data de Referência</TableCell>
+              <TableCell>Percentual do valor extraordinário</TableCell>
+              <TableCell>Valor Extraordinário de Liquidação</TableCell>
+              <TableCell>Valor Ordinário de Liquidação</TableCell>
+              <TableCell>Valor de Liquidação</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -52,6 +61,10 @@ const IncentiveSimulatorTable = ({ selectedParticipantData }: IncentiveSimulator
                   <TableCell>{participant.unvestedPoints}</TableCell>
                   <TableCell>{participant.pointsPerYear}</TableCell>
                   <TableCell>{participant.referenceDate}</TableCell>
+                  <TableCell>{(participant.percentageOfExtraordinaryValue * 100).toFixed(2)}%</TableCell>
+                  <TableCell>{formatCurrency(participant.estimatedExtraordinarySettlementValue)}</TableCell>
+                  <TableCell>{formatCurrency(participant.estimatedOrdinarySettlementValue)}</TableCell>
+                  <TableCell>{formatCurrency(participant.estimatedSettlementValue)}</TableCell>
                 </TableRow>
               ))
             }

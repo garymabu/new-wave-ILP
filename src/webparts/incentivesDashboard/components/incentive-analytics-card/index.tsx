@@ -1,7 +1,7 @@
 import * as React from 'react';
 import styles from './incentive-analytics-card.module.scss';
 import { DedicationType } from '../../../../interface/ilp-business.interface';
-import { getDateDiffUntilTodayInLargestUnit } from '../../util/date.utils';
+import { getDateDiffUntilTodayInLargestUnit } from '../../../../util/date.utils';
 
 export interface IncentiveAnalyticsCardProps {
   companyLogoUrl: string;
@@ -13,6 +13,8 @@ export interface IncentiveAnalyticsCardProps {
   startInCompanyDate: Date;
   totalCompanyPoints: number;
   companyColor: string;
+  parentCompanyId?: string;
+  companyId: string;
 }
 
 export default (
@@ -28,7 +30,6 @@ export default (
     companyColor,
   } :IncentiveAnalyticsCardProps
 ) : React.ReactElement => {
-  console.log('IncentiveAnalyticsCardProps', companyColor,)
   return (
     <div style={{marginLeft: exibitionIndex > 0 ? '4px': '0'}} className={styles.incentiveCard}>
       <div className={styles.companyHeaderRow} style={{borderBottom: `2.2px solid ${companyColor}`}}>
@@ -64,7 +65,7 @@ export default (
         </div>
         <div className={styles.detailWithValue}>
           <div>Porcent. total</div>
-          <span>{((points/totalCompanyPoints)*100).toFixed(2)}%</span>
+          <span>{((points/(totalCompanyPoints || 1) )*100).toFixed(2)}%</span>
         </div>
       </div>
     </div>

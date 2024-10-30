@@ -6,6 +6,18 @@
   flex-direction: column;
 }
 
+.headerRow {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+.headerDisclaimer {
+  font-size: 0.8em;
+  margin-top: 10px;
+  width: 40%;
+}
+
 .participantRow {
   display: flex;
   flex-direction: row;

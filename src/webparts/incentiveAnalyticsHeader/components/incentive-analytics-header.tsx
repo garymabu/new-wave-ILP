@@ -7,7 +7,7 @@ import { SharepointCompany } from '../../../model/company.model';
 import { CompanyAnalytics } from '../../../interface/dto.interface';
 import { ParticipantService } from '../../../integration/services/participant.service';
 import { AnalyticsService } from '../../../integration/services/analytics.service';
-import { formatCurrency } from '../../incentivesDashboard/util/string.utils';
+import { formatCurrency } from '../../../util/string.utils';
 import SettlementModal from './settlementModal/settlement-modal';
 import { LiquidationService } from '../../../integration/services/liquidation.service';
 import { FileService } from '../../../integration/services/file.service';

@@ -9,6 +9,7 @@ export interface Company {
   ValorAlvo: number;
   Logo_x0020_da_x0020_EmpresaId: number;
   LogoUrl?: string;
+  Grupo_x0020_EconomicoId: string;
 }
 
 export interface SharepointCompany
